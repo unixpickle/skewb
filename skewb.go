@@ -42,12 +42,15 @@ func (s *Skewb) TurnB(clock bool) {
 	if clock {
 		s.Centers[5], s.Centers[1], s.Centers[3] = s.Centers[3], s.Centers[5],
 			s.Centers[1]
+		s.Corners[2], s.Corners[4], s.Corners[1] = s.Corners[1], s.Corners[2],
+			s.Corners[4]
 	} else {
 		s.Centers[3], s.Centers[5], s.Centers[1] = s.Centers[5], s.Centers[1],
 			s.Centers[3]
 		s.Corners[1], s.Corners[2], s.Corners[4] = s.Corners[2], s.Corners[4],
 			s.Corners[1]
 	}
+
 	// Change corner orientations.
 	for _, i := range []int{0, 1, 2, 4} {
 		if clock {
@@ -61,7 +64,27 @@ func (s *Skewb) TurnB(clock bool) {
 // TurnL performs a rotation of the L face which corresponds to the bottom front
 // left corner of the Skewb.
 func (s *Skewb) TurnL(clock bool) {
-	// TODO: this
+	// Permute centers and corners.
+	if clock {
+		s.Centers[2], s.Centers[1], s.Centers[5] = s.Centers[5], s.Centers[2],
+			s.Centers[1]
+		s.Corners[6], s.Corners[5], s.Corners[0] = s.Corners[0], s.Corners[6],
+			s.Corners[5]
+	} else {
+		s.Centers[2], s.Centers[1], s.Centers[5] = s.Centers[5], s.Centers[2],
+			s.Centers[1]
+		s.Corners[0], s.Corners[6], s.Corners[5] = s.Corners[6], s.Corners[5],
+			s.Corners[0]
+	}
+
+	// Change corner orientations.
+	for _, i := range []int{0, 4, 6, 5} {
+		if clock {
+			s.Corners[i].Orientation = (s.Corners[i].Orientation + 2) % 3
+		} else {
+			s.Corners[i].Orientation = (s.Corners[i].Orientation + 1) % 3
+		}
+	}
 }
 
 // TurnR performs a rotation of the R face which corresponds to the bottom back
@@ -90,10 +113,30 @@ func (s *Skewb) TurnR(clock bool) {
 	}
 }
 
-// TurnU performs a rotation of the F face which corresponds to the top back
+// TurnU performs a rotation of the U face which corresponds to the top back
 // left corner of the Skewb.
 func (s *Skewb) TurnU(clock bool) {
-	// TODO: this
+	// Permute centers and corners.
+	if clock {
+		s.Centers[0], s.Centers[5], s.Centers[3] = s.Centers[3], s.Centers[0],
+			s.Centers[5]
+		s.Corners[6], s.Corners[0], s.Corners[3] = s.Corners[3], s.Corners[6],
+			s.Corners[0]
+	} else {
+		s.Centers[3], s.Centers[0], s.Centers[5] = s.Centers[0], s.Centers[5],
+			s.Centers[3]
+		s.Corners[3], s.Corners[6], s.Corners[0] = s.Corners[6], s.Corners[0],
+			s.Corners[3]
+	}
+
+	// Change corner orientation.
+	for _, i := range []int{0, 2, 3, 6} {
+		if clock {
+			s.Corners[i].Orientation = (s.Corners[i].Orientation + 2) % 3
+		} else {
+			s.Corners[i].Orientation = (s.Corners[i].Orientation + 1) % 3
+		}
+	}
 }
 
 // Solved returns true if the skewb is solved and oriented correctly.
