@@ -21,24 +21,41 @@ type Skewb struct {
 // NewSkewb returns a solved skewb.
 func NewSkewb() *Skewb {
 	var res Skewb
-	
+
 	// Create corners
 	for i := uint8(0); i < 8; i++ {
 		res.Corners[i].Piece = i
 	}
-	
+
 	// Create centers
 	for i := uint8(0); i < 6; i++ {
 		res.Centers[i] = i
 	}
-	
+
 	return &res
 }
 
 // TurnB performs a rotation of the B face which corresponds to the bottom back
 // left side of the Skewb.
 func (s *Skewb) TurnB(clock bool) {
-	// TODO: this
+	// Permute centers and corners.
+	if clock {
+		s.Centers[5], s.Centers[1], s.Centers[3] = s.Centers[3], s.Centers[5],
+			s.Centers[1]
+	} else {
+		s.Centers[3], s.Centers[5], s.Centers[1] = s.Centers[5], s.Centers[1],
+			s.Centers[3]
+		s.Corners[1], s.Corners[2], s.Corners[4] = s.Corners[2], s.Corners[4],
+			s.Corners[1]
+	}
+	// Change corner orientations.
+	for _, i := range []int{0, 1, 2, 4} {
+		if clock {
+			s.Corners[i].Orientation = (s.Corners[i].Orientation + 1) % 3
+		} else {
+			s.Corners[i].Orientation = (s.Corners[i].Orientation + 2) % 3
+		}
+	}
 }
 
 // TurnL performs a rotation of the L face which corresponds to the bottom front
@@ -51,19 +68,24 @@ func (s *Skewb) TurnL(clock bool) {
 // right corner of the Skewb.
 func (s *Skewb) TurnR(clock bool) {
 	// Permute centers and corners.
-	s.Centers[4], s.Centers[3], s.Centers[1] = s.Centers[1], s.Centers[4],
-		s.Centers[3]
-	s.Corners[3], s.Corners[0], s.Corners[5] = s.Corners[5], s.Corners[3],
-		s.Corners[0]
-	
+	if clock {
+		s.Centers[4], s.Centers[3], s.Centers[1] = s.Centers[1], s.Centers[4],
+			s.Centers[3]
+		s.Corners[3], s.Corners[0], s.Corners[5] = s.Corners[5], s.Corners[3],
+			s.Corners[0]
+	} else {
+		s.Centers[1], s.Centers[4], s.Centers[3] = s.Centers[4], s.Centers[3],
+			s.Centers[1]
+		s.Corners[5], s.Corners[3], s.Corners[0] = s.Corners[3], s.Corners[0],
+			s.Corners[5]
+	}
+
 	// Change corner orientations.
 	for _, i := range []int{0, 1, 3, 5} {
-		if s.Corners[i].Orientation == 0 {
-			s.Corners[i].Orientation = 2
-		} else if s.Corners[i].Orientation == 2 {
-			s.Corners[i].Orientation = 1
+		if clock {
+			s.Corners[i].Orientation = (s.Corners[i].Orientation + 2) % 3
 		} else {
-			s.Corners[i].Orientation = 0
+			s.Corners[i].Orientation = (s.Corners[i].Orientation + 1) % 3
 		}
 	}
 }
@@ -82,13 +104,13 @@ func (s *Skewb) Solved() bool {
 			return false
 		}
 	}
-	
+
 	// Check centers
 	for i := uint8(0); i < 6; i++ {
 		if res.Centers[i] != i {
 			return false
 		}
 	}
-	
+
 	return true
 }
