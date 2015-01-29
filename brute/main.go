@@ -6,13 +6,15 @@ import (
 	"os"
 )
 
+var identity skewb.Skewbs
+
 func main() {
+	identity = skewb.Skewbs(skewb.NewSkewb().AllRotations())
 	puzzle, err := skewb.ReadPuzzle()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
-	fmt.Println(puzzle)
 	for depth := 0; depth < 20; depth++ {
 		fmt.Println("Exploring depth", depth, "...")
 		solution := solve(puzzle, '_', depth)
@@ -25,7 +27,7 @@ func main() {
 
 func solve(s *skewb.Skewb, last rune, remaining int) []skewb.Move {
 	if remaining == 0 {
-		if !s.Solved() {
+		if !identity.Contains(s) {
 			return nil
 		} else {
 			return []skewb.Move{}

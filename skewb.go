@@ -35,6 +35,55 @@ func NewSkewb() *Skewb {
 	return &res
 }
 
+// SkewbsEqual compares two Skewbs directly.
+func SkewbsEqual(s1 *Skewb, s2 *Skewb) bool {
+	for i := 0; i < 8; i++ {
+		if s1.Corners[i].Piece != s2.Corners[i].Piece ||
+			s1.Corners[i].Orientation != s2.Corners[i].Orientation {
+			return false
+		}
+	}
+	for i := 0; i < 6; i++ {
+		if s1.Centers[i] != s2.Centers[i] {
+			return false
+		}
+	}
+	return true
+}
+
+// AllRotations returns all 24 rotations of this Skewb.
+func (s *Skewb) AllRotations() []Skewb {
+	result := make([]Skewb, 0, 24)
+	
+	puzzle := *s
+	
+	// All the rotations except those with the top or bottom face in front.
+	for i := 0; i < 4; i++ {
+		for j := 0; j < 4; j++ {
+			result = append(result, puzzle)
+			puzzle.RotateZ()
+		}
+		puzzle.RotateY()
+	}
+	
+	// Use the bottom face as the front and go through all four permutations.
+	puzzle.RotateX()
+	for i := 0; i < 4; i++ {
+		result = append(result, puzzle)
+		puzzle.RotateZ()
+	}
+	
+	// Use the top face as the front and go through all four permutations
+	puzzle.RotateX()
+	puzzle.RotateX()
+	for i := 0; i < 4; i++ {
+		result = append(result, puzzle)
+		puzzle.RotateZ()
+	}
+	
+	return result
+}
+
 // Move applies a move to the Skewb.
 func (s *Skewb) Move(m Move) {
 	switch m.Face {
