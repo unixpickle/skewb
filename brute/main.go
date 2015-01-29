@@ -7,6 +7,7 @@ import (
 )
 
 var identity skewb.Skewbs
+var heuristic skewb.COHeuristic
 
 func main() {
 	identity = skewb.Skewbs(skewb.NewSkewb().AllRotations())
@@ -15,6 +16,8 @@ func main() {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
+	fmt.Println("Generating heuristic...")
+	heuristic = skewb.MakeCOHeuristic(skewb.AllMoves())
 	for depth := 0; depth < 20; depth++ {
 		fmt.Println("Exploring depth", depth, "...")
 		solution := solve(puzzle, '_', depth)
@@ -31,6 +34,10 @@ func solve(s *skewb.Skewb, last rune, remaining int) []skewb.Move {
 			return nil
 		} else {
 			return []skewb.Move{}
+		}
+	} else {
+		if heuristic.MinMoves(s) > remaining {
+			return nil
 		}
 	}
 

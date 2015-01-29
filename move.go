@@ -7,6 +7,17 @@ type Move struct {
 	Clock bool
 }
 
+// AllMoves returns all the available moves.
+func AllMoves() []Move {
+	res := make([]Move, 0, 8)
+	for _, face := range "BLRU" {
+		for i := 0; i < 2; i++ {
+			res = append(res, Move{face, i == 0})
+		}
+	}
+	return res
+}
+
 // String returns my crappy notation for the move.
 func (m Move) String() string {
 	if m.Clock {
