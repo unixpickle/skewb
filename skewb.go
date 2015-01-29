@@ -68,6 +68,75 @@ func (s *Skewb) Solved() bool {
 	return true
 }
 
+// RotateX performs a WCA "x" rotation to the Skewb.
+// This move goes along what is the R face on the Rubik's cube.
+func (s *Skewb) RotateX() {
+	// Permute the centers.
+	s.Centers[0], s.Centers[3], s.Centers[1], s.Centers[2] = s.Centers[2], 
+		s.Centers[0], s.Centers[3], s.Centers[1]
+	
+	// Permute the corners.
+	s.Corners[2], s.Corners[0], s.Corners[4], s.Corners[6] = s.Corners[6],
+		s.Corners[2], s.Corners[0], s.Corners[4]
+	s.Corners[3], s.Corners[1], s.Corners[5], s.Corners[7] = s.Corners[7],
+		s.Corners[3], s.Corners[1], s.Corners[5]
+	
+	// Swap the y and z orientations.
+	for i := 0; i < 8; i++ {
+		if s.Corners[i].Orientation == 1 {
+			s.Corners[i].Orientation = 2
+		} else if s.Corners[i].Orientation == 2 {
+			s.Corners[i].Orientation = 1
+		}
+	}
+}
+
+// RotateY performs a WCA "y" rotation to the Skewb.
+// This move goes along what is the U face on the Rubik's cube.
+func (s *Skewb) RotateY() {
+	// Permute the centers.
+	s.Centers[2], s.Centers[5], s.Centers[3], s.Centers[4] = s.Centers[4],
+		s.Centers[2], s.Centers[5], s.Centers[3]
+	
+	// Permute the corners.
+	s.Corners[2], s.Corners[3], s.Corners[7], s.Corners[6] = s.Corners[6],
+		s.Corners[2], s.Corners[3], s.Corners[7]
+	s.Corners[0], s.Corners[1], s.Corners[5], s.Corners[4] = s.Corners[4],
+		s.Corners[0], s.Corners[1], s.Corners[5]
+	
+	// Swap the x and z orientations.
+	for i := 0; i < 8; i++ {
+		if s.Corners[i].Orientation == 0 {
+			s.Corners[i].Orientation = 2
+		} else if s.Corners[i].Orientation == 2 {
+			s.Corners[i].Orientation = 0
+		}
+	}
+}
+
+// RotateZ performs a WCA "z" rotation to the Skewb.
+// This move goes along what is the F face on the Rubik's cube.
+func (s *Skewb) RotateZ() {
+	// Permute the centers.
+	s.Centers[0], s.Centers[4], s.Centers[1], s.Centers[5] = s.Centers[5],
+		s.Centers[0], s.Centers[4], s.Centers[1]
+	
+	// Permute the corners.
+	s.Corners[2], s.Corners[3], s.Corners[1], s.Corners[0] = s.Corners[0],
+		s.Corners[2], s.Corners[3], s.Corners[1]
+	s.Corners[6], s.Corners[7], s.Corners[5], s.Corners[4] = s.Corners[4],
+		s.Corners[6], s.Corners[7], s.Corners[5]
+	
+	// Swap x and y orientations
+	for i := 0; i < 8; i++ {
+		if s.Corners[i].Orientation == 0 {
+			s.Corners[i].Orientation = 1
+		} else if s.Corners[i].Orientation == 1 {
+			s.Corners[i].Orientation = 0
+		}
+	}
+}
+
 // TurnB performs a rotation of the B face which corresponds to the bottom back
 // left side of the Skewb.
 func (s *Skewb) TurnB(clock bool) {

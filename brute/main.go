@@ -31,7 +31,7 @@ func solve(s *skewb.Skewb, last rune, remaining int) []skewb.Move {
 			return []skewb.Move{}
 		}
 	}
-	
+
 	for _, face := range "BLRU" {
 		if face == last {
 			continue
@@ -45,6 +45,6 @@ func solve(s *skewb.Skewb, last rune, remaining int) []skewb.Move {
 			}
 		}
 	}
-	
+
 	return nil
 }
