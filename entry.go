@@ -1,7 +1,9 @@
 package skewb
 
 import (
+	"errors"
 	"fmt"
+	"strconv"
 )
 
 // CornerStickers maps the sticker colors to each corner.
@@ -35,15 +37,15 @@ var CenterStickers = []int{
 
 // ReadPuzzle uses standard input to read a puzzle from the user.
 // This will return nil if the user entered an invalid puzzle.
-func ReadPuzzle() *Skewb {
+func ReadPuzzle() (*Skewb, error) {
 	var stickers [30]int
 	for i := 0; i < 6; i++ {
 		fmt.Printf("Enter face %d: ", i+1)
 		var line string
 		fmt.Scanln(&line)
 		if len(line) != 5 {
-			fmt.Println("You typed it wrong. You don't get a second chance.")
-			return nil
+			return nil, errors.New("Invalid length for face " +
+				strconv.Itoa(i+1))
 		}
 		for j, ch := range line {
 			m := map[rune]rune{'w': '1', 'y': '2', 'g': '3', 'b': '4',
@@ -52,10 +54,9 @@ func ReadPuzzle() *Skewb {
 				ch = x
 			}
 			if ch < '1' || ch > '6' {
-				fmt.Println("Yup,", ch, "was wrong.")
-				return nil
+				return nil, errors.New("Invalid character: " + string(ch))
 			}
-			stickers[i*5+j] = int(ch-'1')
+			stickers[i*5+j] = int(ch - '1')
 		}
 	}
 	return SkewbFromStickers(stickers)
@@ -64,16 +65,46 @@ func ReadPuzzle() *Skewb {
 // SkewbFromStickers turns an array containing the stickers of the Skewb into a
 // a piece-by-piece Skewb.
 func SkewbFromStickers(stickers [30]int) (*Skewb, error) {
-	// TODO: lookup all the corners, find all the centers, etc.
+	var result Skewb
+
+	// Read and validate the centers
+	var counts [6]int
 	for i := 0; i < 6; i++ {
-		
+		center := stickers[CenterStickers[i]]
+		result.Centers[i] = uint8(center)
+		counts[center]++
 	}
+	for i := 0; i < 6; i++ {
+		if counts[i] != 1 {
+			return nil, errors.New("Unexpected number of center " +
+				strconv.Itoa(i))
+		}
+	}
+
+	// Read the corners
+	for i := 0; i < 8; i++ {
+		corner := [3]int{
+			stickers[StickerCorners[i*3]],
+			stickers[StickerCorners[i*3+1]],
+			stickers[StickerCorners[i*3+2]],
+		}
+		found, piece, orientation := findCorner(corner)
+		if !found {
+			return nil, errors.New("Invalid corner: " +
+				strconv.Itoa(corner[0]) + " " + strconv.Itoa(corner[1]) + " " +
+				strconv.Itoa(corner[2]))
+		}
+		result.Corners[i].Piece = uint8(piece)
+		result.Corners[i].Orientation = uint8(orientation)
+	}
+
+	return &result, nil
 }
 
 func findCorner(corner [3]int) (found bool, piece int, orientation int) {
 	for piece = 0; piece < 8; piece++ {
 		colors := CornerStickers[piece*3 : piece*3+3]
-		if !setsEqual(colors, corner) {
+		if !setsEqual(colors, corner[:]) {
 			continue
 		}
 		for orientation = 0; orientation < 3; orientation++ {

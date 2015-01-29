@@ -3,16 +3,18 @@ package main
 import (
 	"fmt"
 	"github.com/unixpickle/skewb"
+	"os"
 )
 
 func main() {
-	puzzle := skewb.ReadPuzzle()
-	if puzzle == nil {
-		return
+	puzzle, err := skewb.ReadPuzzle()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
 	}
 	for depth := 0; depth < 20; depth++ {
 		fmt.Println("Exploring depth", depth, "...")
-		solution := solve(puzzle, -1, depth)
+		solution := solve(puzzle, '_', depth)
 		if solution != nil {
 			fmt.Println("Got solution:", solution)
 			return
@@ -20,7 +22,7 @@ func main() {
 	}
 }
 
-func solve(s *skewb.Skewb, last int, remaining int) []skewb.Move {
+func solve(s *skewb.Skewb, last rune, remaining int) []skewb.Move {
 	if remaining == 0 {
 		if !s.Solved() {
 			return nil
@@ -29,7 +31,7 @@ func solve(s *skewb.Skewb, last int, remaining int) []skewb.Move {
 		}
 	}
 	
-	for face := 0; face < 4; face++ {
+	for _, face := range "BLRU" {
 		if face == last {
 			continue
 		}

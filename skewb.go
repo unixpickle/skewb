@@ -8,13 +8,13 @@ package skewb
 // A corner's index is the binary triple XYZ with the origin at the bottom back
 // left corner of the cube.
 type Corner struct {
-	Piece       int8
-	Orientation int8
+	Piece       uint8
+	Orientation uint8
 }
 
 // A Skewb represents the state of a Skewb.
 type Skewb struct {
-	Centers [6]int8
+	Centers [6]uint8
 	Corners [8]Corner
 }
 
@@ -53,14 +53,14 @@ func (s *Skewb) Move(m Move) {
 func (s *Skewb) Solved() bool {
 	// Check corners.
 	for i := uint8(0); i < 8; i++ {
-		if res.Corners[i].Piece != i || res.Corners[i].Orientation != 0 {
+		if s.Corners[i].Piece != i || s.Corners[i].Orientation != 0 {
 			return false
 		}
 	}
 
 	// Check centers
 	for i := uint8(0); i < 6; i++ {
-		if res.Centers[i] != i {
+		if s.Centers[i] != i {
 			return false
 		}
 	}
@@ -104,8 +104,8 @@ func (s *Skewb) TurnL(clock bool) {
 		s.Corners[6], s.Corners[5], s.Corners[0] = s.Corners[0], s.Corners[6],
 			s.Corners[5]
 	} else {
-		s.Centers[2], s.Centers[1], s.Centers[5] = s.Centers[5], s.Centers[2],
-			s.Centers[1]
+		s.Centers[5], s.Centers[2], s.Centers[1] = s.Centers[2], s.Centers[1],
+			s.Centers[5]
 		s.Corners[0], s.Corners[6], s.Corners[5] = s.Corners[6], s.Corners[5],
 			s.Corners[0]
 	}
