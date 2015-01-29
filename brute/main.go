@@ -12,6 +12,7 @@ func main() {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
+	fmt.Println(puzzle)
 	for depth := 0; depth < 20; depth++ {
 		fmt.Println("Exploring depth", depth, "...")
 		solution := solve(puzzle, '_', depth)
