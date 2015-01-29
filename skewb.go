@@ -35,6 +35,39 @@ func NewSkewb() *Skewb {
 	return &res
 }
 
+// Move applies a move to the Skewb.
+func (s *Skewb) Move(m Move) {
+	switch m.Face {
+	case 'B':
+		s.TurnB(m.Clock)
+	case 'L':
+		s.TurnL(m.Clock)
+	case 'R':
+		s.TurnR(m.Clock)
+	case 'U':
+		s.TurnU(m.Clock)
+	}
+}
+
+// Solved returns true if the skewb is solved and oriented correctly.
+func (s *Skewb) Solved() bool {
+	// Check corners.
+	for i := uint8(0); i < 8; i++ {
+		if res.Corners[i].Piece != i || res.Corners[i].Orientation != 0 {
+			return false
+		}
+	}
+
+	// Check centers
+	for i := uint8(0); i < 6; i++ {
+		if res.Centers[i] != i {
+			return false
+		}
+	}
+
+	return true
+}
+
 // TurnB performs a rotation of the B face which corresponds to the bottom back
 // left side of the Skewb.
 func (s *Skewb) TurnB(clock bool) {
@@ -137,23 +170,4 @@ func (s *Skewb) TurnU(clock bool) {
 			s.Corners[i].Orientation = (s.Corners[i].Orientation + 1) % 3
 		}
 	}
-}
-
-// Solved returns true if the skewb is solved and oriented correctly.
-func (s *Skewb) Solved() bool {
-	// Check corners.
-	for i := uint8(0); i < 8; i++ {
-		if res.Corners[i].Piece != i || res.Corners[i].Orientation != 0 {
-			return false
-		}
-	}
-
-	// Check centers
-	for i := uint8(0); i < 6; i++ {
-		if res.Centers[i] != i {
-			return false
-		}
-	}
-
-	return true
 }
