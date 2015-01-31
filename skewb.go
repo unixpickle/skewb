@@ -98,25 +98,6 @@ func (s *Skewb) Move(m Move) {
 	}
 }
 
-// Solved returns true if the skewb is solved and oriented correctly.
-func (s *Skewb) Solved() bool {
-	// Check corners.
-	for i := uint8(0); i < 8; i++ {
-		if s.Corners[i].Piece != i || s.Corners[i].Orientation != 0 {
-			return false
-		}
-	}
-
-	// Check centers
-	for i := uint8(0); i < 6; i++ {
-		if s.Centers[i] != i {
-			return false
-		}
-	}
-
-	return true
-}
-
 // RotateX performs a WCA "x" rotation to the Skewb.
 // This move goes along what is the R face on the Rubik's cube.
 func (s *Skewb) RotateX() {
@@ -184,6 +165,25 @@ func (s *Skewb) RotateZ() {
 			s.Corners[i].Orientation = 0
 		}
 	}
+}
+
+// Solved returns true if the skewb is solved and oriented correctly.
+func (s *Skewb) Solved() bool {
+	// Check corners.
+	for i := uint8(0); i < 8; i++ {
+		if s.Corners[i].Piece != i || s.Corners[i].Orientation != 0 {
+			return false
+		}
+	}
+
+	// Check centers
+	for i := uint8(0); i < 6; i++ {
+		if s.Centers[i] != i {
+			return false
+		}
+	}
+
+	return true
 }
 
 // TurnB performs a rotation of the B face which corresponds to the bottom back
