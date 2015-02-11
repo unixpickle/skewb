@@ -6,18 +6,34 @@ import (
 	"os"
 )
 
-var identity skewb.Skewbs
+var identity skewb.Skewb
 var heuristic skewb.COHeuristic
 
 func main() {
-	identity = skewb.Skewbs(skewb.NewSkewb().AllRotations())
+	// Input the puzzle.
 	puzzle, err := skewb.ReadPuzzle()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
+	
+	// Choose the identity with the same URF corner as the scramble.
+	foundId := false
+	for _, rot := range skewb.NewSkewb().AllRotations() {
+		if rot.Corners[7].Piece == puzzle.Corners[7].Piece &&
+			rot.Corners[7].Orientation == puzzle.Corners[7].Orientation {
+			identity = rot
+			foundId = true
+			break
+		}
+	}
+	if !foundId {
+		fmt.Fprintln(os.Stderr, "Invalid URF corner.")
+		os.Exit(1)
+	}
+	
 	fmt.Println("Generating heuristic...")
-	heuristic = skewb.MakeCOHeuristic(skewb.AllMoves())
+	heuristic = skewb.MakeCOHeuristic(identity, skewb.AllMoves())
 	for depth := 0; depth < 20; depth++ {
 		fmt.Println("Exploring depth", depth, "...")
 		solution := solve(puzzle, '_', depth)
@@ -30,7 +46,7 @@ func main() {
 
 func solve(s *skewb.Skewb, last rune, remaining int) []skewb.Move {
 	if remaining == 0 {
-		if !identity.Contains(s) {
+		if !skewb.SkewbsEqual(s, &identity) {
 			return nil
 		} else {
 			return []skewb.Move{}

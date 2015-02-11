@@ -4,14 +4,11 @@ package skewb
 type COHeuristic map[int]int
 
 // MakeCOHeuristic uses breadth-first search to generate a COHeuristic.
-func MakeCOHeuristic(moves []Move) COHeuristic {
+func MakeCOHeuristic(start Skewb, moves []Move) COHeuristic {
 	res := COHeuristic{}
 	
 	// Create the starting nodes
-	nodes := make([]searchNode, 24)
-	for i, x := range NewSkewb().AllRotations() {
-		nodes[i] = searchNode{x, 0}
-	}
+	nodes := []searchNode{searchNode{start, 0}}
 	
 	// Do the search
 	for len(nodes) > 0 {
